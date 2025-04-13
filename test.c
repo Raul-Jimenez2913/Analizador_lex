@@ -3,7 +3,8 @@
 
 int main() {
     char c = 'A';
-    int x = 42;
+    int x = 042;
+    int h = 0x1F4;
     float y = 3.14;
     const char* msg = "Hola\n";
 

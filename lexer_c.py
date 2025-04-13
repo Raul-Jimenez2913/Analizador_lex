@@ -4,7 +4,10 @@ import ply.lex as lex
 tokens = (
     'KEYWORD',
     'IDENTIFIER',
-    'NUMBER',
+    'FLOAT',
+    'INT_HEX',
+    'INT_OCT',
+    'INT_DEC',
     'STRING',
     'CHAR',
     'OPERATOR',
@@ -22,9 +25,9 @@ keywords = {
     'volatile', 'while', 'include', 'define'
 }
 
-# Reglas simples con expresiones regulares
+# Reglas simples con regex
 t_HASH      = r'\#'
-t_OPERATOR  = r'==|!=|<=|>=|\+\+|--|&&|\|\||[-+*/%=<>!&|^~]'
+t_OPERATOR = r'==|!=|<=|>=|<<=|>>=|\+=|-=|\*=|/=|%=|&=|\|=|\^=|<<|>>|->|&&|\|\||\+\+|--|[-+*/%=<>&|^~!=.]'
 t_DELIMITER = r'[{}\[\]();,]'
 t_STRING    = r'"([^"\\]|\\.)*"'
 t_CHAR      = r"'([^'\\]|\\.)'"
@@ -42,10 +45,28 @@ def t_COMMENT(t):
 # Espacios y tabs (ignorados)
 t_ignore = ' \t'
 
-# Regla para números
-def t_NUMBER(t):
-    r'\b\d+(\.\d+)?([eE][+-]?\d+)?\b'
-    t.value = float(t.value) if '.' in t.value or 'e' in t.value.lower() else int(t.value)
+# Reglara para números con decimales
+def t_FLOAT(t):
+    r'\d+\.\d*([eE][+-]?\d+)?|\d+[eE][+-]?\d+'
+    t.value = float(t.value)
+    return t
+
+# Regla para números hexadecimales
+def t_INT_HEX(t):
+    r'0[xX][0-9a-fA-F]+'
+    t.value = int(t.value, 16)
+    return t
+
+# Regla para números octales
+def t_INT_OCT(t):
+    r'0[0-7]+'
+    t.value = int(t.value, 8)
+    return t
+
+# Regla para números decimales
+def t_INT_DEC(t):
+    r'(0|[1-9][0-9]*)'
+    t.value = int(t.value)
     return t
 
 # Regla para identificadores y palabras clave
